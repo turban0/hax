@@ -16,15 +16,15 @@ hax.controller('RootCtrl', function($scope, socket, $interval) {
     };
     var time;
     var id = 0;
+
     $interval(function(){
         time = new Date();
-        socket.emit('pingTest', {id: ++id, time: new Date()});
+        socket.emit('pingTest', {id: ++id, time: time});
         console.log("Ping " + id + " sent");
     }, 5000)
 
     socket.on('pingResponse', function(data){
-       console.log("Ping " + data.id + ": " + ping + "ms");
+       console.log("Ping " + data.id + ": " + (new Date().getTime() - new Date(data.time).getTime()) + "ms");
     });
-
 });
 

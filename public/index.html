@@ -26,7 +26,11 @@
         </div>
       </div>
 
-      <div ng-show="activePane === 'match'" id="Match" class="pane">match pane</div>
+      <div ng-show="activePane === 'match'" id="Match" class="pane">
+        <svg width="500" height="500" id="PathContainer">
+          <circle r="11" cx="100" cy="100" fill="red" stroke="white" stroke-width="3" id="Player1"></circle>
+        </svg>
+      </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js" type="text/javascript"></script>
@@ -34,7 +38,90 @@
     <script src="/javascripts/socket.js" type="text/javascript"></script>
     <script src="/javascripts/angularApp.js" type="text/javascript"></script>
     <script>
-      var socket = io();
+      var fps = 30;
+      var frameLength = 1000/fps;
+
+      var queue = function() {
+        var headNode = null;
+
+        var q = {};
+        q.pop = function() {
+          if(!headNode) throw "queue is empty";
+          var ret = headNode.val;
+          headNode = headNode.tail;
+          return ret;
+        };
+
+        q.push = function(val) {
+          var node = {};
+          node.val = val;
+          node.tail = headNode;
+          headNode = node;
+        };
+
+        q.hasNext = function() { return !!headNode; };
+
+        return q;
+      };
+
+      var eventQueue = queue();
+
+      window.onkeydown = function(e) {
+        var charCode = e.keyCode || e.which;
+
+        var known = false;
+
+        switch (charCode) {
+          case 39:
+                eventQueue.push('r_d');
+                known = true;
+                break;
+
+          default:
+                break;
+        }
+
+        if(known) e.preventDefault();
+      };
+
+      window.onkeyup = function(e) {
+        var charCode = e.keyCode || e.which;
+
+        var known = false;
+
+        switch (charCode) {
+          case 39:
+            eventQueue.push('r_u');
+            known = true;
+            break;
+
+          default:
+            break;
+        }
+
+        if(known) e.preventDefault();
+      };
+
+      var v = 0;
+
+      var gameLoop = function() {
+        while(eventQueue.hasNext()) {
+          var e = eventQueue.pop();
+          if(e == 'r_d') {
+            console.log("v = 1");
+            v = 1;
+          } else if(e == "r_u") {
+            console.log("v = 0");
+            v = 0;
+          }
+        }
+
+        document.getElementById('Player1').cx.baseVal.value += v;
+
+        window.setTimeout(gameLoop, frameLength);
+      };
+
+      window.setTimeout(gameLoop, frameLength);
     </script>
   </body>
 </html>

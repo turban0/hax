@@ -6,15 +6,11 @@ var players = require('../models/players');
 module.exports = function(io){
     io.on('connection', function(socket){
         console.log('a user connected');
-        io.on('pingTest', function(data){
+        socket.on('pingTest', function(data){
             console.log('got it');
-            io.emit('pingResponse', data);
+            socket.emit('pingResponse', data);
         })
     });
-
-
-
-
 };
 
 
