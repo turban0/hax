@@ -1,8 +1,101 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+/* Main Primary color */
+@color-primary-0: #2E4372;
+@color-primary-1: #7788AA;
+@color-primary-2: #4E638E;
+@color-primary-3: #152A55;
+@color-primary-4: #061639;
+@color-text-0: #fff;
+
+@gameHeight: 650px;
+@gameWidth: 1000px;
+
+
+.center(@width, @height) {
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  margin-left: -1*@width/2;
+  margin-top: -1*@height/2;
+  width: @width;
+  height: @height;
 }
 
-a {
-  color: #00B7FF;
+.floatingWidth(@percentage, @padding: 5px){
+  width: @percentage !important;
+  float: left;
+  padding: @padding;
+}
+
+.border-radius(@radius) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  border-radius: @radius;
+}
+
+.border(@color, @radius: 0){
+  border: 3px solid @color;
+  .border-radius(@radius);
+}
+
+.fillParent {
+  width: 100%;
+  height: 100%;
+}
+.float {
+  float: left;
+  position: relative;
+}
+
+.full    {  .floatingWidth(100%);  }
+.half    {  .floatingWidth(50%);  }
+.third   {  .floatingWidth(33.33%);  }
+.quarter {  .floatingWidth(25%);  }
+
+* {
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+body {
+  background-color: @color-primary-4;
+}
+
+#Wrapper {
+  .center(@gameWidth, @gameHeight);
+}
+
+.pane {
+  position: relative;
+  float:left;
+  width: 100%;
+  height: 100%;
+  background-color: @color-primary-0;
+  .border-radius(15px);
+}
+
+#PlayersSection {
+  height: 0.75 * @gameHeight;
+
+  > div {
+    .fillParent();
+  }
+
+  .playersBox {
+    .border(@color-primary-3, 10px);
+    background-color: @color-primary-2;
+    height: 100%;
+    width: 100%;
+    float: left;
+  }
+}
+
+#Options {
+  height: 0.25 * @gameHeight;
+
+  > div {
+    background-color: @color-primary-2;
+    .border(@color-primary-3, 10px);
+    .fillParent();
+  }
 }

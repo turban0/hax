@@ -10,6 +10,7 @@ var idGenerator = new function(){
         return "p" + self.id;
     }
 };
+
 function deepCopy(obj) {
     var out, i;
     if (Object.prototype.toString.call(obj) === '[object Array]') {
