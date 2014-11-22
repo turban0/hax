@@ -39,5 +39,5 @@
     </properties>
   </component>
   <component name="IdProvider" IDEtalkID="C82FAA4FAFB558E71594A8D15B97724A" />
-  <component name="ProjectRootManager" version="2" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" assert-keyword="false" jdk-15="false" />
 </project>
