@@ -42,25 +42,46 @@ var eventQueue;
         return q;
     })();
 
+    var keyState = { up: true, down: false };
+
+    var currentKeyStates = {
+        left: keyState.up,
+        right: keyState.up,
+        up: keyState.up,
+        down: keyState.up
+    };
+
     window.addEventListener('keydown', function(e) {
         var charCode = e.keyCode || e.which;
         var known = false;
 
         switch (charCode) {
             case 37:
-                eventQueue.push('l_d');
+                if(currentKeyStates.left == keyState.up) {
+                    eventQueue.push('l_d');
+                    currentKeyStates.left = keyState.down;
+                }
                 known = true;
                 break;
             case 38:
-                eventQueue.push('u_d');
+                if(currentKeyStates.up == keyState.up) {
+                    eventQueue.push('u_d');
+                    currentKeyStates.up = keyState.down;
+                }
                 known = true;
                 break;
             case 39:
-                eventQueue.push('r_d');
+                if(currentKeyStates.right == keyState.up) {
+                    eventQueue.push('r_d');
+                    currentKeyStates.right = keyState.down;
+                }
                 known = true;
                 break;
             case 40:
-                eventQueue.push('d_d');
+                if(currentKeyStates.down == keyState.up) {
+                    eventQueue.push('d_d');
+                    currentKeyStates.down = keyState.down;
+                }
                 known = true;
                 break;
             default:
@@ -76,19 +97,31 @@ var eventQueue;
 
         switch (charCode) {
             case 37:
-                eventQueue.push('l_u');
+                if(currentKeyStates.left == keyState.down) {
+                    eventQueue.push('l_u');
+                    currentKeyStates.left = keyState.up;
+                }
                 known = true;
                 break;
             case 38:
-                eventQueue.push('u_u');
+                if(currentKeyStates.up == keyState.down) {
+                    eventQueue.push('u_u');
+                    currentKeyStates.up = keyState.up;
+                }
                 known = true;
                 break;
             case 39:
-                eventQueue.push('r_u');
+                if(currentKeyStates.right == keyState.down) {
+                    eventQueue.push('r_u');
+                    currentKeyStates.right = keyState.up;
+                }
                 known = true;
                 break;
             case 40:
-                eventQueue.push('d_u');
+                if(currentKeyStates.down == keyState.down) {
+                    eventQueue.push('d_u');
+                    currentKeyStates.down = keyState.up;
+                }
                 known = true;
                 break;
             default:

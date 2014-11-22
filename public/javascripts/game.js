@@ -5,37 +5,39 @@ var fps = 30;
 var frameLength = 1000/fps;
 var io = io();
 
+var v = 1;
 var vX = 0;
 var vY = 0;
 
-
 var gameLoop = function() {
+    var loopBeginning = new Date();
     while(eventQueue.hasNext()) {
+
         var e = eventQueue.pop();
         switch (e){
             case "l_d":
-                vX = -1;
+                vX -= v;
                 break;
             case "l_u":
-                vX = 0;
+                vX += v;
                 break;
             case "u_d":
-                vY = -1;
+                vY -= v;
                 break;
             case "u_u":
-                vY = 0;
+                vY += v;
                 break;
             case "r_d":
-                vX = 1;
+                vX += v;
                 break;
             case "r_u":
-                vX = 0;
+                vX -= v;
                 break;
             case "d_d":
-                vY = 1;
+                vY += v;
                 break;
             case "d_u":
-                vY = 0;
+                vY -= v;
                 break;
         }
     }
@@ -46,9 +48,11 @@ var gameLoop = function() {
         vY: vY,
         time: new Date().getTime()
     });
-    window.setTimeout(gameLoop, frameLength);
+    var loopEnding = new Date();
+    var millisToNext = frameLength - (loopEnding - loopBeginning);
+    window.setTimeout(gameLoop, millisToNext);
 };
-window.setTimeout(gameLoop, frameLength);
+gameLoop();
 
 io.on('playerUpdate', function(data){
     console.log("X:" + data.positionX + " Y:" + data.positionY + " Delay:" + (new Date().getTime() - data.time));
