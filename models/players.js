@@ -34,7 +34,7 @@ var playersList = [];
 
 module.exports = {
     newPlayer: function(nick){
-        playersList.push({id: idGenerator.get(), nick: nick, role: 'spect'});
+        playersList.push({id: idGenerator.get(), nick: nick, role: 'spect', positionX: 0, positionY: 0, vX: 0, vY: 0});
     },
     movePlayer: function(id, role){
         var player = _.findWhere(playersList, {id: id});
@@ -48,7 +48,7 @@ module.exports = {
         if (role){
             return deepCopy(_.filter(playersList, function(player){return player.role === role}));
         } else {
-            return deepCopy(_.clone(playersList));
+            return deepCopy(playersList);
         }
     },
     removePlayer: function(id){

@@ -14,7 +14,7 @@ hax.controller('RootCtrl', function($scope, socket, $interval) {
     $scope.match = function(){
         $scope.activePane = 'match';
     };
-    var time;
+/*  var time;
     var id = 0;
 
     $interval(function(){
@@ -25,6 +25,6 @@ hax.controller('RootCtrl', function($scope, socket, $interval) {
 
     socket.on('pingResponse', function(data){
        console.log("Ping " + data.id + ": " + (new Date().getTime() - new Date(data.time).getTime()) + "ms");
-    });
+    });*/
 });
 
