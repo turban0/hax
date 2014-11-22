@@ -5,7 +5,7 @@ var eventQueue;
 
 (function(){
     eventQueue = (function() {
-        // uses a circular doubly linked list to model a FIFO queue.
+        // uses a circular doubly linked list with sentinel to model a FIFO queue.
 
         var nilNode = {};
         nilNode.next = nilNode;
@@ -19,7 +19,7 @@ var eventQueue;
         };
 
         var q = {};
-        q.pop = function() {
+        q.dequeue = function() {
             var headNode = nilNode.next;
             if(headNode.isNilNode) throw "queue is empty";
 
@@ -28,7 +28,7 @@ var eventQueue;
             return headNode.val;
         };
 
-        q.push = function(val) {
+        q.enqueue = function(val) {
             var node = {};
             node.val = val;
             node.prev = nilNode.prev;
@@ -58,28 +58,28 @@ var eventQueue;
         switch (charCode) {
             case 37:
                 if(currentKeyStates.left == keyState.up) {
-                    eventQueue.push('l_d');
+                    eventQueue.enqueue('l_d');
                     currentKeyStates.left = keyState.down;
                 }
                 known = true;
                 break;
             case 38:
                 if(currentKeyStates.up == keyState.up) {
-                    eventQueue.push('u_d');
+                    eventQueue.enqueue('u_d');
                     currentKeyStates.up = keyState.down;
                 }
                 known = true;
                 break;
             case 39:
                 if(currentKeyStates.right == keyState.up) {
-                    eventQueue.push('r_d');
+                    eventQueue.enqueue('r_d');
                     currentKeyStates.right = keyState.down;
                 }
                 known = true;
                 break;
             case 40:
                 if(currentKeyStates.down == keyState.up) {
-                    eventQueue.push('d_d');
+                    eventQueue.enqueue('d_d');
                     currentKeyStates.down = keyState.down;
                 }
                 known = true;
@@ -98,28 +98,28 @@ var eventQueue;
         switch (charCode) {
             case 37:
                 if(currentKeyStates.left == keyState.down) {
-                    eventQueue.push('l_u');
+                    eventQueue.enqueue('l_u');
                     currentKeyStates.left = keyState.up;
                 }
                 known = true;
                 break;
             case 38:
                 if(currentKeyStates.up == keyState.down) {
-                    eventQueue.push('u_u');
+                    eventQueue.enqueue('u_u');
                     currentKeyStates.up = keyState.up;
                 }
                 known = true;
                 break;
             case 39:
                 if(currentKeyStates.right == keyState.down) {
-                    eventQueue.push('r_u');
+                    eventQueue.enqueue('r_u');
                     currentKeyStates.right = keyState.up;
                 }
                 known = true;
                 break;
             case 40:
                 if(currentKeyStates.down == keyState.down) {
-                    eventQueue.push('d_u');
+                    eventQueue.enqueue('d_u');
                     currentKeyStates.down = keyState.up;
                 }
                 known = true;
