@@ -11,6 +11,9 @@ var idGenerator = new function(){
     }
 };
 
+
+//deep copy is fucked up totally, I've commented usages out
+/*
 function deepCopy(obj) {
     var out, i;
     if (Object.prototype.toString.call(obj) === '[object Array]') {
@@ -29,14 +32,17 @@ function deepCopy(obj) {
     }
     return obj;
 }
+*/
 
 var playersList = [];
 
 module.exports = {
     newPlayer: function(nick){
-        playersList.push({id: idGenerator.get(), nick: nick, role: 'spect', positionX: 0, positionY: 0, vX: 0, vY: 0});
+        var id = idGenerator.get();
+        playersList.push({id: id, nick: nick, role: 'spect', positionX: 0, positionY: 0, aX: 0, aY: 0});
+        return id;
     },
-    movePlayer: function(id, role){
+    setPlayerTeam: function(id, role){
         var player = _.findWhere(playersList, {id: id});
         if (player){
             return !!(player.role = role);
@@ -44,11 +50,33 @@ module.exports = {
             return false;
         }
     },
+    getPlayer: function(id){
+        var selectedPlayer = _.findWhere(playersList, {id: id});
+        if(selectedPlayer){
+            //return deepCopy(selectedPlayer);
+            return selectedPlayer;
+        } else {
+            return false;
+        }
+    },
+    updatePlayer: function(id, positionX, positionY, vX, vY) {
+        var selectedPlayer = _.findWhere(playersList, {id: id});
+        if(selectedPlayer){
+            selectedPlayer.positionX = positionX;
+            selectedPlayer.positionY = positionY;
+            selectedPlayer.vX = vX;
+            selectedPlayer.vY = vY;
+        } else {
+            return false;
+        }
+    },
     getPlayers: function(role){
         if (role){
-            return deepCopy(_.filter(playersList, function(player){return player.role === role}));
+            //return deepCopy(_.filter(playersList, function(player){return player.role === role}));
+            return _.filter(playersList, function(player){return player.role === role});
         } else {
-            return deepCopy(playersList);
+            //return deepCopy(playersList);
+            return playersList;
         }
     },
     removePlayer: function(id){

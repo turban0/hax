@@ -9,11 +9,13 @@ var v = 1;
 var vX = 0;
 var vY = 0;
 
+tempPlayerId = "p1";
+
 var gameLoop = function() {
     var loopBeginning = new Date();
     while(eventQueue.hasNext()) {
 
-        var e = eventQueue.pop();
+        var e = eventQueue.dequeue();
         switch (e){
             case "l_d":
                 vX -= v;
@@ -42,11 +44,11 @@ var gameLoop = function() {
         }
     }
     io.emit('playerMove',{
-        positionX: document.getElementById('Player1').cx.baseVal.value,
-        positionY: document.getElementById('Player1').cy.baseVal.value,
+        positionX: parseInt(document.getElementById(tempPlayerId).getAttribute('cx')),
+        positionY: parseInt(document.getElementById(tempPlayerId).getAttribute('cy')),
         vX: vX,
         vY: vY,
-        time: new Date().getTime()
+        id: tempPlayerId
     });
     var loopEnding = new Date();
     var millisToNext = frameLength - (loopEnding - loopBeginning);
@@ -54,9 +56,15 @@ var gameLoop = function() {
 };
 gameLoop();
 
-io.on('playerUpdate', function(data){
-    console.log("X:" + data.positionX + " Y:" + data.positionY + " Delay:" + (new Date().getTime() - data.time));
-    document.getElementById('Player1').cx.baseVal.value = data.positionX;
-    document.getElementById('Player1').cy.baseVal.value = data.positionY;
+io.on('gameUpdate', function(data){
+    var len = data.length;
+    var selectedPlayer;
+    for(var i = 0; i < len; i++) {
+        selectedPlayer = data[i];
+        console.log("X:" + selectedPlayer.positionX + " Y:" + selectedPlayer.positionY);
+        document.getElementById(selectedPlayer.id).setAttribute('cx', selectedPlayer.positionX);
+        document.getElementById(selectedPlayer.id).setAttribute('cy', selectedPlayer.positionY);
+    }
+
 });
 
