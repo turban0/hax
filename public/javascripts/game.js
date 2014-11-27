@@ -70,16 +70,28 @@ var gameLoop = function() {
 gameLoop();
 
 io.on('gameUpdate', function(data) {
-    data.forEach(function(player) {
-        console.log(player.id + " - X: " + player.pos.x + " Y: " + player.pos.y);
-        players[player.id].pos = { x: player.pos.x, y: player.pos.y };
+    data.forEach(function(serverPlayer) {
+        console.log(serverPlayer.id + " - X: " + serverPlayer.pos.x + " Y: " + serverPlayer.pos.y);
+
+        var player = players[serverPlayer.id];
+
+        if(!player) {
+            players[serverPlayer.id] = { id: serverPlayer.id, nick:'', pos: { x: 0, y: 0 }};
+            addPlayerAvatar(serverPlayer.id);
+            player = players[serverPlayer.id];
+        }
+
+        player.pos = { x: serverPlayer.pos.x, y: serverPlayer.pos.y };
     });
 });
 
 io.on('playerId', function(data) {
     players[data] = { id: data, nick:'', pos: { x: 0, y: 0 }};
     localPlayerId = data;
-    // TODO: remove this workaround
+    addPlayerAvatar(data);
+});
+
+function addPlayerAvatar(id) {
     var xmlns = "http://www.w3.org/2000/svg";
     var circle = document.createElementNS(xmlns, 'circle');
     circle.setAttributeNS(null, 'r', '15');
@@ -88,7 +100,7 @@ io.on('playerId', function(data) {
     circle.setAttributeNS(null, 'fill', '#e56e56');
     circle.setAttributeNS(null, 'stroke', 'black');
     circle.setAttributeNS(null, 'stroke-width', '2');
-    circle.setAttributeNS(null, 'id', data);
+    circle.setAttributeNS(null, 'id', id);
     document.getElementById('PathContainer').appendChild(circle);
-});
+}
 

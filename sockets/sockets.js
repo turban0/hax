@@ -1,3 +1,3 @@
 module.exports = function(io){
-    require('./game')(io);
+    require('./gameLoop')(io);
 }

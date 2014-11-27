@@ -28,13 +28,6 @@ function deepCopy(obj) {
 
 var playersList = [];
 
-var toDto = function(player) {
-    return {
-        id: player.id,
-        pos: player.pos
-    };
-};
-
 module.exports = {
     newPlayer: function(nick){
         var id = uuid.v4();
@@ -87,7 +80,6 @@ module.exports = {
             ret = playersList;
         }
         return ret;
-        //return playersToSend.map(toDto);
     },
     removePlayer: function(id){
         if(_.findWhere(playersList, {id: id})){
