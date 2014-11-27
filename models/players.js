@@ -2,15 +2,7 @@
  * Created by turban on 2014-11-18.
  */
 var _ = require('underscore');
-var idGenerator = new function(){
-    var self = this;
-    self.id = 0;
-    this.get = function(){
-        self.id++;
-        return "p" + self.id;
-    }
-};
-
+var uuid = require('uuid');
 
 //deep copy is fucked up totally, I've commented usages out
 /*
@@ -36,10 +28,25 @@ function deepCopy(obj) {
 
 var playersList = [];
 
+var toDto = function(player) {
+    return {
+        id: player.id,
+        pos: player.pos
+    };
+};
+
 module.exports = {
     newPlayer: function(nick){
-        var id = idGenerator.get();
-        playersList.push({id: id, nick: nick, role: 'spect', positionX: 0, positionY: 0, aX: 0, aY: 0});
+        var id = uuid.v4();
+        playersList.push({
+            id: id,
+            nick: nick,
+            role: 'spect',
+            pos: { x: 0, y: 0 },
+            v: { x: 0, y: 0 },
+            a: { x: 0, y: 0 },
+            input: { x: 0, y: 0}
+        });
         return id;
     },
     setPlayerTeam: function(id, role){
@@ -62,22 +69,25 @@ module.exports = {
     updatePlayer: function(id, positionX, positionY, vX, vY) {
         var selectedPlayer = _.findWhere(playersList, {id: id});
         if(selectedPlayer){
-            selectedPlayer.positionX = positionX;
-            selectedPlayer.positionY = positionY;
-            selectedPlayer.vX = vX;
-            selectedPlayer.vY = vY;
+            selectedPlayer.pos.x = positionX;
+            selectedPlayer.pos.y = positionY;
+            selectedPlayer.v.x = vX;
+            selectedPlayer.v.y = vY;
         } else {
             return false;
         }
     },
     getPlayers: function(role){
+        var ret;
         if (role){
             //return deepCopy(_.filter(playersList, function(player){return player.role === role}));
-            return _.filter(playersList, function(player){return player.role === role});
+            ret = _.filter(playersList, function(player){return player.role === role});
         } else {
             //return deepCopy(playersList);
-            return playersList;
+            ret = playersList;
         }
+        return ret;
+        //return playersToSend.map(toDto);
     },
     removePlayer: function(id){
         if(_.findWhere(playersList, {id: id})){

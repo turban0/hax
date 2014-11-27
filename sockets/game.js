@@ -1,46 +1,6 @@
 /**
  * Created by turban on 2014-11-20.
  */
-
-var eventQueue = function() {
-    // uses a circular doubly linked list with sentinel to model a FIFO queue.
-
-    var nilNode = {};
-    nilNode.next = nilNode;
-    nilNode.prev = nilNode;
-    nilNode.val = null;
-    nilNode.isNilNode = true;
-
-    var spliceNode = function(node) {
-        node.prev.next = node.next;
-        node.next.prev = node.prev;
-    };
-
-    var q = {};
-    q.dequeue = function() {
-        var headNode = nilNode.next;
-        if(headNode.isNilNode) throw "queue is empty";
-
-        spliceNode(headNode);
-
-        return headNode.val;
-    };
-
-    q.enqueue = function(val) {
-        var node = {};
-        node.val = val;
-        node.prev = nilNode.prev;
-        node.next = nilNode;
-        nilNode.prev.next = node;
-        nilNode.prev = node;
-    };
-
-    q.hasNext = function() { return !nilNode.next.isNilNode; };
-
-    return q;
-};
-
-
 var serverFps = 60;
 var frameLength = 1000/serverFps;
 
@@ -49,20 +9,30 @@ var playerId = players.newPlayer("turban");
 players.setPlayerTeam(playerId,'red');
 players.updatePlayer(playerId, 50, 50, 0, 0);
 
-module.exports = function(io){
-    var movesQueue = eventQueue();
+var params = {
+    acc: 360,
+    damp: 0.96
+};
 
+module.exports = function(io) {
+    var previousUpdateTime = new Date().getTime();
     var gameLoop = function() {
-        while(movesQueue.hasNext()) {
-            var e = movesQueue.dequeue();
-            calculatePosition(e);
-        }
+        var loopBeginning = new Date().getTime();
+        var dt = (loopBeginning - previousUpdateTime)/1000;
+        previousUpdateTime = loopBeginning;
+
+        update(dt);
 
         io.emit('gameUpdate', players.getPlayers());
-        setTimeout(gameLoop, frameLength);
+        var elapsed = new Date().getTime() - loopBeginning;
+        setTimeout(gameLoop, frameLength - elapsed);
     };
     setTimeout(gameLoop, frameLength);
 
+    setUpIO(io);
+};
+
+function setUpIO(io) {
     io.on('connection', function(socket){
         console.log('a user connected');
 
@@ -72,37 +42,39 @@ module.exports = function(io){
         });
 
         socket.on('playerMove', function(data){
-            movesQueue.enqueue(data)
+            players.getPlayer(data.id).input = data.input;
         });
+
+        socket.emit('playerId', playerId);
     });
-};
+}
 
-//simplified for one player
-function calculatePosition(e) {
-    var selectedPlayer = players.getPlayer(e.id);
-    var newPositionX, newPositionY;
-    //check if client position is correct
-    if(selectedPlayer.positionX === e.positionX && selectedPlayer.positionY === e.positionY){
-        newPositionX = selectedPlayer.positionX + e.vX;
-        newPositionY = selectedPlayer.positionY + e.vY;
+function update(dt) {
+    var allPlayers = players.getPlayersData();
 
-        //acceleration is currently 0 all the time
-        players.updatePlayer(playerId, newPositionX, newPositionY, 0, 0);
+    allPlayers.forEach(function(player) {
+        var prevA = player.a;
+        var prevV = player.v;
+
+        player.pos = { x: player.pos.x+prevV.x*dt, y: player.pos.y+prevV.y*dt };
+
+        var input = normalizeVector(player.input);
+        player.a = { x: input.x * params.acc, y: input.y * params.acc};
+        var dampCoeff = Math.pow(params.damp, 60*dt);
+        player.v = { x: player.v.x*dampCoeff, y: player.v.y*dampCoeff};
+        player.v = { x: player.v.x+prevA.x*dt, y: player.v.y+prevA.y*dt};
+    })
+}
+
+function normalizeVector(vec) {
+    var len = Math.sqrt(vec.x*vec.x + vec.y*vec.y);
+    var ret;
+    if(len !== 0) {
+        ret = { x: vec.x/len, y: vec.y/len };
     } else {
-        //we've got a problem, position on client differs from position saved on server
-        //for now I'm just using server position and logging the case,
-        //that behaviour should be investigated further
-        console.log("Position for player " + selectedPlayer.id + ":" + selectedPlayer.nick + " is messed." +
-                    " (client/server) X:" + e.positionX + "/" + selectedPlayer.positionX +
-                    " Y:" + e.positionY + "/" + selectedPlayer.positionY);
-
-        newPositionX = selectedPlayer.positionX + e.vX;
-        newPositionY = selectedPlayer.positionY + e.vY;
-
-        //acceleration is currently 0 all the time
-        players.updatePlayer(playerId, newPositionX, newPositionY, 0, 0);
+        ret = { x: 0, y: 0 };
     }
-
+    return ret;
 }
 
 
