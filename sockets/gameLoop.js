@@ -5,19 +5,20 @@ var serverFps = 60;
 var frameLength = 1000/serverFps;
 
 var game = require('../models/game');
+var vector = require('../models/utils/vector');
+var timer = require('../models/utils/timer');
 
 module.exports = function(io) {
-    var previousUpdateTime = new Date().getTime();
+    timer.start();
     var gameLoop = function() {
-        var loopBeginning = new Date().getTime();
-        var dt = (loopBeginning - previousUpdateTime)/1000;
-        previousUpdateTime = loopBeginning;
+        var loopBeginning = timer.getRunningTime();
+        var dt = timer.getElapsedTime()/1000000;
 
         game.update(dt);
 
         io.emit('gameUpdate', game.getPlayersData());
-        var elapsed = new Date().getTime() - loopBeginning;
-        setTimeout(gameLoop, frameLength - elapsed);
+        var misInLoop = timer.getRunningTime() - loopBeginning;
+        setTimeout(gameLoop, frameLength - misInLoop/1000);
     };
     setTimeout(gameLoop, frameLength);
 
@@ -34,8 +35,7 @@ function setUpIO(io) {
         });
 
         socket.on('playerMove', function(data){
-            console.log(data.input);
-            game.setInput(data.id, data.input);
+            game.setInput(data.id, vector.fromObj(data.input));
         });
 
         socket.emit('playerId', game.createPlayer());

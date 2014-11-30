@@ -103,4 +103,3 @@ function addPlayerAvatar(id) {
     circle.setAttributeNS(null, 'id', id);
     document.getElementById('PathContainer').appendChild(circle);
 }
-

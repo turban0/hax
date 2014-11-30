@@ -3,6 +3,7 @@
  */
 var _ = require('underscore');
 var uuid = require('uuid');
+var vector = require('../models/utils/vector');
 
 //deep copy is fucked up totally, I've commented usages out
 /*
@@ -35,10 +36,10 @@ module.exports = {
             id: id,
             nick: nick,
             role: 'spect',
-            pos: { x: 0, y: 0 },
-            v: { x: 0, y: 0 },
-            a: { x: 0, y: 0 },
-            input: { x: 0, y: 0}
+            pos: vector.from(0, 0),
+            v: vector.from(0, 0),
+            a: vector.from(0, 0),
+            input: vector.from(0, 0)
         });
         return id;
     },
@@ -62,10 +63,8 @@ module.exports = {
     updatePlayer: function(id, positionX, positionY, vX, vY) {
         var selectedPlayer = _.findWhere(playersList, {id: id});
         if(selectedPlayer){
-            selectedPlayer.pos.x = positionX;
-            selectedPlayer.pos.y = positionY;
-            selectedPlayer.v.x = vX;
-            selectedPlayer.v.y = vY;
+            selectedPlayer.pos = vector.from(positionX, positionY);
+            selectedPlayer.v = vector.from(vX, vY);
         } else {
             return false;
         }
