@@ -4,6 +4,9 @@
 var serverFps = 60;
 var frameLength = 1000/serverFps;
 
+var nsInSecond = 1e9;
+var nsInMillisecond = 1e6;
+
 var game = require('../models/game');
 var vector = require('../models/utils/vector');
 var timer = require('../models/utils/timer');
@@ -12,13 +15,13 @@ module.exports = function(io) {
     timer.start();
     var gameLoop = function() {
         var loopBeginning = timer.getRunningTime();
-        var dt = timer.getElapsedTime()/1000000;
+        var dt = timer.getElapsedTime()/nsInSecond;
 
         game.update(dt);
 
         io.emit('gameUpdate', game.getPlayersData());
-        var misInLoop = timer.getRunningTime() - loopBeginning;
-        setTimeout(gameLoop, frameLength - misInLoop/1000);
+        var nsInLoop = timer.getRunningTime() - loopBeginning;
+        setTimeout(gameLoop, frameLength - nsInLoop/nsInMillisecond);
     };
     setTimeout(gameLoop, frameLength);
 
