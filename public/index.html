@@ -8,21 +8,64 @@
   </head>
   <body data-ng-app="hax">
     <div id="Wrapper" data-ng-controller="RootCtrl">
-      {{activePane}}
-      <div data-ng-show="activePane === 'setup'" id="Setup" class="pane">
+      <div data-ng-show="activePane === 'rooms'" class="pane" data-ng-controller="RoomsCtrl">
+        <div id="Rooms" class="full">
+          <div class="twoThird">
+            <div id="RoomsList" class="innerBox">
+              <ul>
+                <li class="room" data-ng-repeat="room in rooms" data-ng-click="selectRoom(room.id)" data-ng-class="{selected: selectedRoomId === room.id}">
+                  <span><strong>{{room.name}}</strong>&nbsp;{{room.playersNumber}}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="third">
+            <div id="RoomsActions" class="innerBox">
+              <label for="NickInput">Nick</label><input id="NickInput" type="text" data-ng-model="nick"/><br/>
+              <label for="RoomNameInput">Room name</label><input id="RoomNameInput" type="text" data-ng-model="roomName"/><br/>
+              <button data-ng-click="createRoom()">Create Room</button>
+              <button data-ng-click="joinRoom()">Join Room</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-ng-show="activePane === 'setup'" id="Setup" class="pane"  data-ng-controller="SetupCtrl">
         <div id="PlayersSection" class="full">
           <div class="third">
-            <div class="playersBox"></div>
+            <div class="innerBox">
+              <h2>Red</h2>
+              <ul class="playersList">
+                <li data-ng-repeat="player in players.red" >
+                  <strong>{{player.nick}}</strong>
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="third">
-            <div class="playersBox"></div>
+            <div class="innerBox">
+              <h2>Spect</h2>
+              <ul class="playersList">
+                <li data-ng-repeat="player in players.spect" >
+                  <strong>{{player.nick}}</strong>
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="third">
-            <div class="playersBox"></div>
+            <div class="innerBox">
+              <h2>Blue</h2>
+              <ul class="playersList">
+                <li data-ng-repeat="player in players.blue" >
+                  <strong>{{player.nick}}</strong>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         <div id="Options" class="full">
-          <div>
+          <div class="innerBox">
             <button data-ng-click="match()">Match</button>
           </div>
         </div>

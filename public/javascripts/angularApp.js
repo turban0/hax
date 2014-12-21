@@ -9,22 +9,48 @@ hax.factory('socket', function (socketFactory) {
     return socketFactory();
 });
 
-hax.controller('RootCtrl', function($scope, socket, $interval) {
-    $scope.activePane = 'setup';
+hax.controller('RootCtrl', function($scope, $rootScope) {
+    $rootScope.activePane = 'rooms';
     $scope.match = function(){
         $scope.activePane = 'match';
     };
-/*  var time;
-    var id = 0;
-
-    $interval(function(){
-        time = new Date();
-        socket.emit('pingTest', {id: ++id, time: time});
-        console.log("Ping " + id + " sent");
-    }, 5000)
-
-    socket.on('pingResponse', function(data){
-       console.log("Ping " + data.id + ": " + (new Date().getTime() - new Date(data.time).getTime()) + "ms");
-    });*/
 });
 
+hax.controller('RoomsCtrl', function($scope, socket, $rootScope) {
+    $scope.nick = "turban";
+    $scope.roomName = "XXXXXXXXXXXXXXXX";
+
+    socket.on('roomsList', function(data){
+        console.log(data);
+        $scope.rooms = data;
+    });
+    socket.emit('listRooms');
+
+    $scope.createRoom = function(){
+        socket.emit('createRoom', {roomName: $scope.roomName, nick: $scope.nick});
+        //$rootScope.activePane = 'setup';
+    };
+    $scope.joinRoom = function(){
+        if($scope.selectedRoomId){
+            socket.emit('joinRoom', {id: $scope.selectedRoomId, nick: $scope.nick});
+            $rootScope.activePane = 'setup';
+        }
+    };
+    $scope.refreshRooms = function(){
+        socket.emit('listRooms');
+    };
+    $scope.selectRoom = function(roomId){
+        $scope.selectedRoomId = roomId;
+    };
+});
+
+hax.controller('SetupCtrl', function($scope, socket, $rootScope) {
+    socket.emit('getRoom', {});
+    $scope.players = {};
+    socket.on('room', function(data){
+        console.log(data);
+        $scope.players.red = data.players.red;
+        $scope.players.spect = data.players.spect;
+        $scope.players.blue = data.players.blue;
+    });
+});

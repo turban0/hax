@@ -30,11 +30,12 @@ function deepCopy(obj) {
 var playersList = [];
 
 module.exports = {
-    newPlayer: function(nick){
+    newPlayer: function(nick, socket){
         var id = uuid.v4();
         playersList.push({
             id: id,
             nick: nick,
+            socket: socket,
             role: 'spect',
             pos: vector.from(0, 0),
             v: vector.from(0, 0),

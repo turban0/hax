@@ -1,3 +1,3 @@
 module.exports = function(io){
-    require('./gameLoop')(io);
+    require('./rooms')(io);
 }
