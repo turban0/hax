@@ -1,10 +1,10 @@
 module.exports = {
-    create: function(fComp) {
-        return heap(fComp);
+    create: function(keyF) {
+        return heap(keyF);
     }
 };
 
-function heap(fComp) {
+function heap(keyF) {
     var data = [];
     var size = 0;
 
@@ -16,16 +16,20 @@ function heap(fComp) {
                 data[size] = x;
             }
 
-            swim(fComp, data, size++);
+            swim(keyF, data, size++);
         },
-        get: function() {
-            if(!this.hasNext()) throw "heap is empty";
+        getMax: function() {
+            if(this.isEmpty()) throw "heap is empty";
+
+            return data[0];
+        },
+        removeMax: function() {
+            if(this.isEmpty()) throw "heap is empty";
 
             swap(data, 0, --size);
-            sink(fComp, size, data, 0);
-            return data[size + 1];
+            sink(keyF, size, data, 0);
         },
-        hasNext: function() { return size > 0; }
+        isEmpty: function() { return size <= 0; }
     };
 }
 
@@ -47,28 +51,26 @@ function swap(data, idx1, idx2) {
     data[idx2] = t;
 }
 
-function sink(fComp, size, data, idx) {
-    var maxIdx = idx;
-    var checkIdx = leftChildIdx(idx);
-    if(checkIdx < size && fComp(data[maxIdx], data[checkIdx]) < 0) {
-        maxIdx = checkIdx;
-    }
-    checkIdx = rightChildIdx(idx);
-    if(checkIdx < size && fComp(data[maxIdx], data[checkIdx]) < 0) {
-        maxIdx = checkIdx;
-    }
+function sink(keyF, size, data, idx) {
+    var indices = [idx, leftChildIdx(idx), rightChildIdx(idx)];
+
+    var getMaxIndex = function(acc, idx) {
+        return idx < size && keyF(data[acc]) < keyF(data[idx]) ? idx: acc;
+    };
+
+    var maxIdx = indices.reduce(getMaxIndex);
 
     if(maxIdx !== idx) {
-        swap(idx, maxIdx);
-        sink(fComp, data, maxIdx);
+        swap(data, idx, maxIdx);
+        sink(keyF, data, maxIdx);
     }
 }
 
-function swim(fComp, data, idx) {
+function swim(keyF, data, idx) {
     if(idx === 0) return;
     var parentIdx = parentIdx(idx);
-    if(fComp(data[idx], data[parentIdx]) > 0) {
+    if(keyF(data[idx]) > keyF(data[parentIdx])) {
         swap(data, idx, parentIdx);
-        swim(fComp, data, parentIdx);
+        swim(keyF, data, parentIdx);
     }
 }

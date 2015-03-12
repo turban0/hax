@@ -1,0 +1,20 @@
+@startuml
+scale 750 width
+
+[*] -> Connected : onConnection
+Connected --> RoomsLounge : nickChosen
+Connected --> [*] : disconnected
+
+RoomsLounge : nick: String
+RoomsLounge -> RoomsLounge : refresh
+RoomsLounge --> InRoom : create\njoin
+RoomsLounge --> [*] : disconnected
+
+InRoom : nick: String
+InRoom : team: ???
+InRoom : isAdmin: Boolean
+InRoom : roomId: UUID
+InRoom --> RoomsLounge : leave
+InRoom --> InRoom : becomeAdmin\nchangeTeam
+InRoom --> [*] : disconnected
+@enduml

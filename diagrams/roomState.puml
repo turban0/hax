@@ -1,0 +1,17 @@
+@startuml
+scale 750 width
+[*] --> SetUp : onCreated
+
+SetUp : stadium: ???
+SetUp : ?: ???
+SetUp --> SetUp : changeConfig
+SetUp --> Game : start
+SetUp --> [*] : lastPlayerLeft
+
+Game -left-> Paused : pause
+Game --> SetUp : stop
+Game --> [*] : lastPlayerLeft
+
+Paused --> Game : unpause
+Paused --> [*] : lastPlayerLeft
+@enduml
